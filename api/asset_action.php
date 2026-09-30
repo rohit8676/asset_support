@@ -214,6 +214,23 @@ try {
         $category = trim($input['category'] ?? '');
         $statusFilter = trim($input['status'] ?? '');
 
+        // Base filter condition applied to both list and stats
+        $baseWhere = " WHERE 1=1";
+        $baseParams = [];
+
+        if (!empty($search)) {
+            $baseWhere .= " AND (a.asset_id LIKE ? OR a.asset_name LIKE ? OR a.serial_number LIKE ? OR a.source LIKE ? OR a.description LIKE ? OR c.category_name LIKE ?)";
+            $term = "%{$search}%";
+            $baseParams = array_merge($baseParams, [$term, $term, $term, $term, $term, $term]);
+        }
+
+        if (!empty($category)) {
+            $baseWhere .= " AND (a.category_id = ? OR c.category_name = ?)";
+            $baseParams[] = $category;
+            $baseParams[] = $category;
+        }
+
+        // Main Query (Includes optional statusFilter if user specifically clicked a status tab)
         $sql = "SELECT a.asset_id, 
                        a.asset_name, 
                        a.description, 
@@ -225,25 +242,14 @@ try {
                        CONVERT(VARCHAR(10), a.in_date, 120) AS in_date,
                        CONVERT(VARCHAR(19), a.created_at, 120) AS created_at
                 FROM assets a
-                LEFT JOIN categories c ON a.category_id = c.category_id
-                WHERE 1=1";
-        $params = [];
-
-        if (!empty($search)) {
-            $sql .= " AND (a.asset_id LIKE ? OR a.asset_name LIKE ? OR a.serial_number LIKE ? OR a.source LIKE ? OR a.description LIKE ? OR c.category_name LIKE ?)";
-            $term = "%{$search}%";
-            $params = array_merge($params, [$term, $term, $term, $term, $term, $term]);
-        }
-
-        if (!empty($category)) {
-            $sql .= " AND (a.category_id = ? OR c.category_name = ?)";
-            $params[] = $category;
-            $params[] = $category;
-        }
+                LEFT JOIN categories c ON a.category_id = c.category_id" . $baseWhere;
+        $params = $baseParams;
 
         if (!empty($statusFilter)) {
             if ($statusFilter === 'Available' || $statusFilter === 'In Stock') {
                 $sql .= " AND a.status IN ('Available', 'In Stock')";
+            } elseif ($statusFilter === 'In Use' || $statusFilter === 'Assigned') {
+                $sql .= " AND a.status IN ('In Use', 'Assigned')";
             } else {
                 $sql .= " AND a.status = ?";
                 $params[] = $statusFilter;
@@ -256,11 +262,22 @@ try {
         $stmt->execute($params);
         $assets = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        // Fetch Stats
-        $statTotal = (int)$db->query("SELECT COUNT(*) FROM assets")->fetchColumn();
-        $statInStock = (int)$db->query("SELECT COUNT(*) FROM assets WHERE status IN ('Available', 'In Stock')")->fetchColumn();
-        $statInUse = (int)$db->query("SELECT COUNT(*) FROM assets WHERE status = 'In Use'")->fetchColumn();
-        $statRepair = (int)$db->query("SELECT COUNT(*) FROM assets WHERE status = 'Under Repair'")->fetchColumn();
+        // Calculate Filter-Based Stats for the Top KPI Cards
+        $stmtTotal = $db->prepare("SELECT COUNT(*) FROM assets a LEFT JOIN categories c ON a.category_id = c.category_id" . $baseWhere);
+        $stmtTotal->execute($baseParams);
+        $statTotal = (int)$stmtTotal->fetchColumn();
+
+        $stmtInStock = $db->prepare("SELECT COUNT(*) FROM assets a LEFT JOIN categories c ON a.category_id = c.category_id" . $baseWhere . " AND a.status IN ('Available', 'In Stock')");
+        $stmtInStock->execute($baseParams);
+        $statInStock = (int)$stmtInStock->fetchColumn();
+
+        $stmtInUse = $db->prepare("SELECT COUNT(*) FROM assets a LEFT JOIN categories c ON a.category_id = c.category_id" . $baseWhere . " AND a.status IN ('In Use', 'Assigned')");
+        $stmtInUse->execute($baseParams);
+        $statInUse = (int)$stmtInUse->fetchColumn();
+
+        $stmtRepair = $db->prepare("SELECT COUNT(*) FROM assets a LEFT JOIN categories c ON a.category_id = c.category_id" . $baseWhere . " AND a.status = 'Under Repair'");
+        $stmtRepair->execute($baseParams);
+        $statRepair = (int)$stmtRepair->fetchColumn();
 
         echo json_encode([
             'success' => true,

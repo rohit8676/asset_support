@@ -45,24 +45,24 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 </div>
 
-<!-- 2. Stock Summary / KPI Cards (First on Top) -->
+<!-- 2. Stock Summary / KPI Cards (Filtered in Real-Time Based on Active Filters) -->
 <div class="row g-3 mb-4">
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card d-flex align-items-center gap-3">
+        <div class="stat-card kpi-filter-card active d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm" data-status="" style="cursor: pointer; transition: all 0.2s ease;">
             <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-3">
                 <i class="bi bi-laptop"></i>
             </div>
             <div>
                 <div class="text-muted small fw-semibold text-uppercase">Total Assets</div>
                 <div class="fs-4 fw-bold text-dark" id="statTotalAssets">0</div>
-                <div class="small text-muted">Registered in System</div>
+                <div class="small text-muted">In Current Filter</div>
             </div>
         </div>
     </div>
 
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card d-flex align-items-center gap-3">
-            <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 fs-3">
+        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm" data-status="In Use" style="cursor: pointer; transition: all 0.2s ease;">
+            <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-3">
                 <i class="bi bi-person-check"></i>
             </div>
             <div>
@@ -74,8 +74,8 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card d-flex align-items-center gap-3">
-            <div class="p-3 bg-info bg-opacity-10 text-info rounded-3 fs-3">
+        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm" data-status="Available" style="cursor: pointer; transition: all 0.2s ease;">
+            <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 fs-3">
                 <i class="bi bi-box-seam"></i>
             </div>
             <div>
@@ -87,7 +87,7 @@ require_once __DIR__ . '/includes/header.php';
     </div>
 
     <div class="col-sm-6 col-xl-3">
-        <div class="stat-card d-flex align-items-center gap-3">
+        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm" data-status="Under Repair" style="cursor: pointer; transition: all 0.2s ease;">
             <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 fs-3">
                 <i class="bi bi-tools"></i>
             </div>
@@ -505,7 +505,7 @@ require_once __DIR__ . '/includes/header.php';
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------
-    // 1. ASSET LISTING & DYNAMIC RENDERING
+    // 1. ASSET LISTING & DYNAMIC RENDERING (REAL-TIME FILTER SYNC)
     // -------------------------------------------------------------
     const assetsTableBody = document.getElementById('assetsTableBody');
     const badgeAssetCount = document.getElementById('badgeAssetCount');
@@ -515,6 +515,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const statRepairAssets = document.getElementById('statRepairAssets');
     const assetSearchInput = document.getElementById('assetSearchInput');
     const assetCategoryFilter = document.getElementById('assetCategoryFilter');
+    const kpiFilterCards = document.querySelectorAll('.kpi-filter-card');
+
+    let currentStatusFilter = '';
 
     async function loadAssets() {
         const search = assetSearchInput ? assetSearchInput.value.trim() : '';
@@ -524,17 +527,34 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch('<?= url('api/asset_action.php') ?>', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ action: 'list_assets', search, category })
+                body: JSON.stringify({ 
+                    action: 'list_assets', 
+                    search: search, 
+                    category: category,
+                    status: currentStatusFilter
+                })
             });
             const data = await res.json();
 
             if (data.success) {
-                // Update KPI Cards
+                // Update Top KPI Cards (Reflects counts based on active search & category filter)
                 if (statTotalAssets) statTotalAssets.textContent = data.counts.total;
                 if (statInStockAssets) statInStockAssets.textContent = data.counts.in_stock;
                 if (statInUseAssets) statInUseAssets.textContent = data.counts.in_use;
                 if (statRepairAssets) statRepairAssets.textContent = data.counts.under_repair;
                 if (badgeAssetCount) badgeAssetCount.textContent = `${data.counts.filtered} Assets`;
+
+                // Update active state visuals on KPI cards
+                kpiFilterCards.forEach(card => {
+                    const cardStatus = card.getAttribute('data-status') || '';
+                    if (cardStatus === currentStatusFilter) {
+                        card.classList.add('border-primary', 'bg-light', 'shadow');
+                        card.style.borderWidth = '2px';
+                    } else {
+                        card.classList.remove('border-primary', 'bg-light', 'shadow');
+                        card.style.borderWidth = '1px';
+                    }
+                });
 
                 // Render Table Rows
                 renderAssetsTable(data.assets);
@@ -546,13 +566,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
+    // KPI Card Click Handler (Filter Table by Status on Click)
+    kpiFilterCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const clickedStatus = this.getAttribute('data-status') || '';
+            if (currentStatusFilter === clickedStatus && clickedStatus !== '') {
+                // Toggle off to all
+                currentStatusFilter = '';
+            } else {
+                currentStatusFilter = clickedStatus;
+            }
+            loadAssets();
+        });
+    });
+
     function renderAssetsTable(assets) {
         if (!assets || assets.length === 0) {
             assetsTableBody.innerHTML = `
                 <tr>
                     <td colspan="8" class="text-center py-5 text-muted">
                         <i class="bi bi-inbox fs-3 d-block mb-2"></i>
-                        No matching asset records found. Click <strong>Add Asset</strong> to create a new hardware entry.
+                        No matching asset records found for the selected filter.
                     </td>
                 </tr>
             `;
@@ -697,7 +731,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         document.getElementById('editAssetName').value = a.asset_name;
                         document.getElementById('editAssetSerial').value = a.serial_number || '';
                         document.getElementById('editAssetSource').value = a.source || '';
-                        document.getElementById('editAssetStatus').value = a.status || 'In Stock';
+                        document.getElementById('editAssetStatus').value = a.status || 'Available';
                         document.getElementById('editAssetInDate').value = a.in_date || '';
                         document.getElementById('editAssetDescription').value = a.description || '';
 
@@ -759,8 +793,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btnResetAssetFilters.addEventListener('click', () => {
             if (assetSearchInput) assetSearchInput.value = '';
             if (assetCategoryFilter) assetCategoryFilter.value = '';
+            currentStatusFilter = '';
             loadAssets();
-            showToast('Filters reset.', 'success');
+            showToast('Filters reset to show all assets.', 'success');
         });
     }
 
