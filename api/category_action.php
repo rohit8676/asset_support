@@ -25,6 +25,21 @@ $input = json_decode(file_get_contents('php://input'), true) ?? $_POST;
 $action = $input['action'] ?? '';
 $db = Database::getConnection();
 
+// Clean & Normalize Category Name (Trims whitespace, trailing/leading dots and punctuation)
+function normalizeCategoryName(string $name): string {
+    $name = trim($name);
+    // Remove leading/trailing dots, commas, dashes, slashes, punctuation
+    $name = trim($name, " .\t\n\r\0\x0B-_,;:!?/|\\#*@~`+=^%&()[]{}'\"<>");
+    // Collapse multiple spaces into one
+    $name = preg_replace('/\s+/', ' ', $name);
+    return trim($name);
+}
+
+// Canonical alphanumeric key for duplicate detection (e.g. "Laptop." -> "LAPTOP")
+function getCategoryCanonicalKey(string $name): string {
+    return strtoupper(preg_replace('/[^a-zA-Z0-9]/', '', $name));
+}
+
 // System Auto-Prefix Generator from Category Name
 function generateCategoryPrefix(string $name): string {
     $clean = strtoupper(preg_replace('/[^a-zA-Z0-9\s]/', '', $name));
@@ -43,22 +58,42 @@ function generateCategoryPrefix(string $name): string {
 try {
     if ($action === 'save_category') {
         $categoryId = trim($input['category_id'] ?? ($input['id'] ?? ''));
-        $categoryName = trim($input['category_name'] ?? ($input['categories'] ?? ''));
+        $rawCategoryName = $input['category_name'] ?? ($input['categories'] ?? '');
+        $categoryName = normalizeCategoryName($rawCategoryName);
+        $canonicalKey = getCategoryCanonicalKey($categoryName);
 
-        if (empty($categoryName)) {
-            echo json_encode(['success' => false, 'message' => 'Category Name is required.']);
+        if (empty($categoryName) || empty($canonicalKey) || strlen($canonicalKey) < 2) {
+            echo json_encode([
+                'success' => false, 
+                'message' => 'Please enter a valid Category Name with at least 2 alphanumeric characters.'
+            ]);
             exit;
+        }
+
+        // Fetch all categories to perform thorough normalized duplicate check
+        $existingCats = $db->query("SELECT category_id, category_name FROM categories")->fetchAll(PDO::FETCH_ASSOC);
+
+        foreach ($existingCats as $ec) {
+            // If editing, skip the current category itself
+            if (!empty($categoryId) && strcasecmp($ec['category_id'], $categoryId) === 0) {
+                continue;
+            }
+
+            $ecNorm = normalizeCategoryName($ec['category_name']);
+            $ecCanonical = getCategoryCanonicalKey($ec['category_name']);
+
+            // Strict check: either exact case-insensitive match or identical canonical key
+            if (strcasecmp($categoryName, $ec['category_name']) === 0 || $canonicalKey === $ecCanonical) {
+                echo json_encode([
+                    'success' => false, 
+                    'message' => "Category '{$ec['category_name']}' already exists in system."
+                ]);
+                exit;
+            }
         }
 
         if (!empty($categoryId)) {
             // Edit existing category (rename)
-            $chk = $db->prepare("SELECT COUNT(*) FROM categories WHERE category_name = ? AND category_id != ?");
-            $chk->execute([$categoryName, $categoryId]);
-            if ((int)$chk->fetchColumn() > 0) {
-                echo json_encode(['success' => false, 'message' => 'This Category Name already exists.']);
-                exit;
-            }
-
             $sql = "UPDATE categories SET category_name = ? WHERE category_id = ?";
             $stmt = $db->prepare($sql);
             $stmt->execute([$categoryName, $categoryId]);
@@ -69,18 +104,9 @@ try {
             ]);
             exit;
         } else {
-            // Check if name already exists
-            $chk = $db->prepare("SELECT COUNT(*) FROM categories WHERE category_name = ?");
-            $chk->execute([$categoryName]);
-            if ((int)$chk->fetchColumn() > 0) {
-                echo json_encode(['success' => false, 'message' => 'This Category Name already exists.']);
-                exit;
-            }
-
-            // Auto-generate Category ID on behalf of Prefix + Numeric Value
+            // Auto-generate Category ID on behalf of Prefix + Numeric Value (2-digit: e.g. TAB-01, TAB-02)
             $prefix = generateCategoryPrefix($categoryName);
             
-            // Find next available numeric value for this prefix (e.g. TAB-01, TAB-02)
             $seq = 1;
             while (true) {
                 $newId = sprintf("%s-%02d", $prefix, $seq);
@@ -99,7 +125,7 @@ try {
 
             echo json_encode([
                 'success' => true,
-                'message' => "Category '{$categoryName}' added successfully."
+                'message' => "Category '{$categoryName}' ({$categoryId}) added successfully."
             ]);
             exit;
         }

@@ -46,55 +46,68 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <!-- 2. Stock Summary / KPI Cards (Filtered in Real-Time Based on Active Filters) -->
-<div class="row g-3 mb-4">
-    <div class="col-sm-6 col-xl-3">
-        <div class="stat-card kpi-filter-card active d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm" data-status="" style="cursor: pointer; transition: all 0.2s ease;">
+<div class="row g-3 mb-4 row-cols-1 row-cols-sm-2 row-cols-md-3 row-cols-xl-5">
+    <div class="col">
+        <div class="stat-card kpi-filter-card active d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm h-100" data-status="" style="cursor: pointer; transition: all 0.2s ease;">
             <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-3">
                 <i class="bi bi-laptop"></i>
             </div>
             <div>
-                <div class="text-muted small fw-semibold text-uppercase">Total Assets</div>
+                <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Total Assets</div>
                 <div class="fs-4 fw-bold text-dark" id="statTotalAssets">0</div>
-                <div class="small text-muted">In Current Filter</div>
+                <div class="small text-muted" style="font-size: 0.75rem;">In Current Filter</div>
             </div>
         </div>
     </div>
 
-    <div class="col-sm-6 col-xl-3">
-        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm" data-status="In Use" style="cursor: pointer; transition: all 0.2s ease;">
+    <div class="col">
+        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm h-100" data-status="In Use" style="cursor: pointer; transition: all 0.2s ease;">
             <div class="p-3 bg-primary bg-opacity-10 text-primary rounded-3 fs-3">
                 <i class="bi bi-person-check"></i>
             </div>
             <div>
-                <div class="text-muted small fw-semibold text-uppercase">Assigned / In Use</div>
+                <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Assigned / In Use</div>
                 <div class="fs-4 fw-bold text-dark" id="statInUseAssets">0</div>
-                <div class="small text-muted">With Employees</div>
+                <div class="small text-muted" style="font-size: 0.75rem;">With Employees</div>
             </div>
         </div>
     </div>
 
-    <div class="col-sm-6 col-xl-3">
-        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm" data-status="Available" style="cursor: pointer; transition: all 0.2s ease;">
+    <div class="col">
+        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm h-100" data-status="Available" style="cursor: pointer; transition: all 0.2s ease;">
             <div class="p-3 bg-success bg-opacity-10 text-success rounded-3 fs-3">
                 <i class="bi bi-box-seam"></i>
             </div>
             <div>
-                <div class="text-muted small fw-semibold text-uppercase">In Stock / Available</div>
+                <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">In Stock / Available</div>
                 <div class="fs-4 fw-bold text-dark" id="statInStockAssets">0</div>
-                <div class="small text-muted">Ready for Assignment</div>
+                <div class="small text-muted" style="font-size: 0.75rem;">Ready for Assignment</div>
             </div>
         </div>
     </div>
 
-    <div class="col-sm-6 col-xl-3">
-        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm" data-status="Under Repair" style="cursor: pointer; transition: all 0.2s ease;">
+    <div class="col">
+        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm h-100" data-status="Under Repair" style="cursor: pointer; transition: all 0.2s ease;">
             <div class="p-3 bg-warning bg-opacity-10 text-warning rounded-3 fs-3">
                 <i class="bi bi-tools"></i>
             </div>
             <div>
-                <div class="text-muted small fw-semibold text-uppercase">Under Repair</div>
+                <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Under Repair</div>
                 <div class="fs-4 fw-bold text-dark" id="statRepairAssets">0</div>
-                <div class="small text-muted">Maintenance &amp; Support</div>
+                <div class="small text-muted" style="font-size: 0.75rem;">Maintenance &amp; Support</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col">
+        <div class="stat-card kpi-filter-card d-flex align-items-center gap-3 p-3 bg-white border rounded-3 shadow-sm h-100" data-status="Scrapped" style="cursor: pointer; transition: all 0.2s ease;">
+            <div class="p-3 bg-danger bg-opacity-10 text-danger rounded-3 fs-3">
+                <i class="bi bi-slash-circle"></i>
+            </div>
+            <div>
+                <div class="text-muted small fw-semibold text-uppercase" style="font-size: 0.72rem; letter-spacing: 0.5px;">Scrapped</div>
+                <div class="fs-4 fw-bold text-dark" id="statScrappedAssets">0</div>
+                <div class="small text-muted" style="font-size: 0.75rem;">Disposed / Retired</div>
             </div>
         </div>
     </div>
@@ -103,13 +116,13 @@ require_once __DIR__ . '/includes/header.php';
 <!-- 3. Filter & Search Toolbar (Below KPI Cards) -->
 <div class="card p-3 mb-4 bg-white border shadow-sm" style="border-radius: 8px;">
     <div class="row g-3 align-items-center">
-        <div class="col-md-6 col-lg-5">
+        <div class="col-md-4 col-lg-4">
             <div class="input-group">
                 <span class="input-group-text bg-light border-end-0"><i class="bi bi-search text-muted"></i></span>
                 <input type="text" id="assetSearchInput" class="form-control border-start-0" placeholder="Search assets by tag, model, serial...">
             </div>
         </div>
-        <div class="col-md-4 col-lg-4">
+        <div class="col-md-3 col-lg-3">
             <select id="assetCategoryFilter" class="form-select">
                 <option value="">All Categories</option>
                 <?php foreach ($categoriesList as $cat): ?>
@@ -117,8 +130,17 @@ require_once __DIR__ . '/includes/header.php';
                 <?php endforeach; ?>
             </select>
         </div>
-        <div class="col-md-2 col-lg-3 text-md-end">
-            <button class="btn btn-outline-secondary btn-sm px-3" id="btnResetAssetFilters">
+        <div class="col-md-3 col-lg-3">
+            <select id="assetStatusFilter" class="form-select">
+                <option value="">All Statuses</option>
+                <option value="Available">In Stock / Available</option>
+                <option value="In Use">Assigned / In Use</option>
+                <option value="Under Repair">Under Repair</option>
+                <option value="Scrapped">Scrapped</option>
+            </select>
+        </div>
+        <div class="col-md-2 col-lg-2 text-md-end">
+            <button class="btn btn-outline-secondary btn-sm px-3 w-100 w-md-auto" id="btnResetAssetFilters">
                 <i class="bi bi-arrow-counterclockwise me-1"></i> Reset Filters
             </button>
         </div>
@@ -126,8 +148,8 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <!-- 4. Asset Inventory Table Card -->
-<div class="content-card">
-    <div class="card-header d-flex justify-content-between align-items-center">
+<div class="content-card shadow-sm border rounded bg-white">
+    <div class="card-header d-flex justify-content-between align-items-center py-3">
         <span><i class="bi bi-hdd-network text-primary me-2"></i> Asset &amp; Stock Inventory Records</span>
         <span class="badge bg-secondary" id="badgeAssetCount">0 Assets</span>
     </div>
@@ -154,6 +176,28 @@ require_once __DIR__ . '/includes/header.php';
                 </tr>
             </tbody>
         </table>
+    </div>
+
+    <!-- Pagination Footer -->
+    <div class="card-footer bg-white py-3 border-top d-flex flex-wrap justify-content-between align-items-center gap-3" id="paginationContainer">
+        <div class="d-flex align-items-center gap-3">
+            <span class="small text-muted" id="paginationInfo">
+                Showing <strong class="text-dark" id="pagStart">0</strong> to <strong class="text-dark" id="pagEnd">0</strong> of <strong class="text-dark" id="pagTotal">0</strong> entries
+            </span>
+            <div class="d-flex align-items-center gap-1">
+                <label for="pageSizeSelect" class="small text-muted mb-0">Show:</label>
+                <select id="pageSizeSelect" class="form-select form-select-sm py-0 px-2" style="width: 70px;">
+                    <option value="20" selected>20</option>
+                    <option value="50">50</option>
+                    <option value="100">100</option>
+                </select>
+            </div>
+        </div>
+        <nav aria-label="Asset inventory pagination">
+            <ul class="pagination pagination-sm mb-0 justify-content-end" id="assetsPagination">
+                <!-- Dynamically generated pagination items -->
+            </ul>
+        </nav>
     </div>
 </div>
 
@@ -407,10 +451,9 @@ require_once __DIR__ . '/includes/header.php';
                         <div class="col-md-6">
                             <label class="form-label small fw-bold text-dark">Status <span class="text-danger">*</span></label>
                             <select name="status" id="editAssetStatus" class="form-select" required>
-                                <option value="In Stock">In Stock (Available)</option>
-                                <option value="In Use">In Use (Assigned)</option>
+                                <option value="Available">In Stock / Available</option>
+                                <option value="In Use">Assigned / In Use</option>
                                 <option value="Under Repair">Under Repair</option>
-                                <option value="Damaged">Damaged</option>
                                 <option value="Scrapped">Scrapped</option>
                             </select>
                         </div>
@@ -464,38 +507,54 @@ require_once __DIR__ . '/includes/header.php';
 </div>
 
 <!-- ========================================================================= -->
-<!-- 9. MODAL: IMPORT ASSET -->
+<!-- 9. MODAL: IMPORT ASSET (CSV Bulk Upload & Download Template) -->
 <!-- ========================================================================= -->
 <div class="modal fade" id="modalImportAsset" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
         <div class="modal-content border-0 shadow">
-            <div class="modal-header border-bottom py-3">
-                <h5 class="modal-title fw-bold"><i class="bi bi-file-earmark-arrow-up text-primary me-2"></i> Import Bulk Assets</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body p-4">
-                <p class="text-muted small mb-3">Upload a CSV or Excel file containing asset details to import multiple hardware records at once.</p>
-                
-                <div class="border border-dashed p-4 text-center rounded bg-light mb-3">
-                    <i class="bi bi-cloud-arrow-up display-5 text-primary mb-2"></i>
-                    <div class="fw-semibold">Choose a CSV / Excel File</div>
-                    <div class="small text-muted mb-2">Supported formats: .csv, .xlsx</div>
-                    <input type="file" class="form-control form-control-sm mx-auto" style="max-width: 280px;" accept=".csv, .xlsx">
+            <form id="formImportAsset" enctype="multipart/form-data">
+                <input type="hidden" name="action" value="import_assets">
+
+                <div class="modal-header border-bottom py-3">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="p-2 bg-primary bg-opacity-10 text-primary rounded">
+                            <i class="bi bi-file-earmark-arrow-up-fill fs-5"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold mb-0">Import Bulk Assets</h5>
+                            <small class="text-muted">Upload CSV file to import multiple hardware records</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
 
-                <div class="d-flex justify-content-between align-items-center">
-                    <span class="small text-muted">Need the template format?</span>
-                    <button type="button" class="btn btn-link btn-sm p-0 text-decoration-none" onclick="showToast('Downloading CSV template format...', 'success')">
-                        <i class="bi bi-download me-1"></i> Download Template
+                <div class="modal-body p-4">
+                    <p class="text-muted small mb-3">Upload a standard CSV file with hardware asset details. Asset IDs will be generated automatically based on Category ID serialization.</p>
+                    
+                    <div class="border border-dashed p-4 text-center rounded bg-light mb-3" style="border: 2px dashed #cbd5e1 !important;">
+                        <i class="bi bi-cloud-arrow-up display-5 text-primary mb-2"></i>
+                        <div class="fw-semibold">Choose a CSV File</div>
+                        <div class="small text-muted mb-3">Columns: Category_ID, Asset_Name, Description, Serial_Number, Source, Status, In_Date</div>
+                        <input type="file" name="file" id="importAssetFileInput" class="form-control form-control-sm mx-auto" style="max-width: 300px;" accept=".csv" required>
+                    </div>
+
+                    <div class="d-flex justify-content-between align-items-center bg-light p-2 rounded border">
+                        <span class="small text-muted"><i class="bi bi-info-circle me-1 text-primary"></i> Need the CSV template format?</span>
+                        <a href="<?= url('api/asset_action.php?action=download_template') ?>" class="btn btn-sm btn-outline-primary d-flex align-items-center gap-1 text-decoration-none px-2 py-1" download="asset_bulk_import_template.csv">
+                            <i class="bi bi-download"></i>
+                            <span>Download Template</span>
+                        </a>
+                    </div>
+                </div>
+
+                <div class="modal-footer border-top py-2 bg-light">
+                    <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary px-4 d-flex align-items-center gap-2" id="btnSubmitImportAsset">
+                        <span id="importAssetSpinner" class="spinner-border spinner-border-sm d-none" role="status" aria-hidden="true"></span>
+                        <span id="importAssetBtnText">Upload &amp; Import</span>
                     </button>
                 </div>
-            </div>
-            <div class="modal-footer border-top py-2 bg-light">
-                <button type="button" class="btn btn-light" data-bs-dismiss="modal">Cancel</button>
-                <button type="button" class="btn btn-primary px-4" onclick="showToast('Bulk import feature initialized.', 'success'); bootstrap.Modal.getInstance(document.getElementById('modalImportAsset')).hide();">
-                    Upload &amp; Import
-                </button>
-            </div>
+            </form>
         </div>
     </div>
 </div>
@@ -505,7 +564,7 @@ require_once __DIR__ . '/includes/header.php';
 <script>
 document.addEventListener('DOMContentLoaded', () => {
     // -------------------------------------------------------------
-    // 1. ASSET LISTING & DYNAMIC RENDERING (REAL-TIME FILTER SYNC)
+    // 1. ASSET LISTING & DYNAMIC RENDERING (REAL-TIME FILTER & PAGINATION)
     // -------------------------------------------------------------
     const assetsTableBody = document.getElementById('assetsTableBody');
     const badgeAssetCount = document.getElementById('badgeAssetCount');
@@ -513,11 +572,20 @@ document.addEventListener('DOMContentLoaded', () => {
     const statInUseAssets = document.getElementById('statInUseAssets');
     const statInStockAssets = document.getElementById('statInStockAssets');
     const statRepairAssets = document.getElementById('statRepairAssets');
+    const statScrappedAssets = document.getElementById('statScrappedAssets');
     const assetSearchInput = document.getElementById('assetSearchInput');
     const assetCategoryFilter = document.getElementById('assetCategoryFilter');
+    const assetStatusFilter = document.getElementById('assetStatusFilter');
     const kpiFilterCards = document.querySelectorAll('.kpi-filter-card');
+    const assetsPagination = document.getElementById('assetsPagination');
+    const pagStart = document.getElementById('pagStart');
+    const pagEnd = document.getElementById('pagEnd');
+    const pagTotal = document.getElementById('pagTotal');
+    const pageSizeSelect = document.getElementById('pageSizeSelect');
 
     let currentStatusFilter = '';
+    let currentPage = 1;
+    let pageSize = 20;
 
     async function loadAssets() {
         const search = assetSearchInput ? assetSearchInput.value.trim() : '';
@@ -531,18 +599,26 @@ document.addEventListener('DOMContentLoaded', () => {
                     action: 'list_assets', 
                     search: search, 
                     category: category,
-                    status: currentStatusFilter
+                    status: currentStatusFilter,
+                    page: currentPage,
+                    limit: pageSize
                 })
             });
             const data = await res.json();
 
             if (data.success) {
                 // Update Top KPI Cards (Reflects counts based on active search & category filter)
-                if (statTotalAssets) statTotalAssets.textContent = data.counts.total;
-                if (statInStockAssets) statInStockAssets.textContent = data.counts.in_stock;
-                if (statInUseAssets) statInUseAssets.textContent = data.counts.in_use;
-                if (statRepairAssets) statRepairAssets.textContent = data.counts.under_repair;
+                if (statTotalAssets) statTotalAssets.textContent = data.counts.total ?? 0;
+                if (statInStockAssets) statInStockAssets.textContent = data.counts.in_stock ?? 0;
+                if (statInUseAssets) statInUseAssets.textContent = data.counts.in_use ?? 0;
+                if (statRepairAssets) statRepairAssets.textContent = data.counts.under_repair ?? 0;
+                if (statScrappedAssets) statScrappedAssets.textContent = data.counts.scrapped ?? 0;
                 if (badgeAssetCount) badgeAssetCount.textContent = `${data.counts.filtered} Assets`;
+
+                // Sync status filter dropdown value
+                if (assetStatusFilter && assetStatusFilter.value !== currentStatusFilter) {
+                    assetStatusFilter.value = currentStatusFilter;
+                }
 
                 // Update active state visuals on KPI cards
                 kpiFilterCards.forEach(card => {
@@ -556,6 +632,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     }
                 });
 
+                // Update Pagination Info
+                if (data.pagination) {
+                    currentPage = data.pagination.page;
+                    if (pagStart) pagStart.textContent = data.pagination.start_record;
+                    if (pagEnd) pagEnd.textContent = data.pagination.end_record;
+                    if (pagTotal) pagTotal.textContent = data.pagination.total_records;
+                    renderPagination(data.pagination);
+                }
+
                 // Render Table Rows
                 renderAssetsTable(data.assets);
             } else {
@@ -564,6 +649,90 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (err) {
             assetsTableBody.innerHTML = `<tr><td colspan="8" class="text-center py-4 text-danger">Server connection error while fetching assets.</td></tr>`;
         }
+    }
+
+    // Render Pagination Controls (Previous, 1, 2, 3..., Next)
+    function renderPagination(p) {
+        if (!assetsPagination) return;
+        if (!p || p.total_records === 0 || p.total_pages <= 1) {
+            assetsPagination.innerHTML = '';
+            return;
+        }
+
+        let html = '';
+
+        // Previous Button
+        const prevDisabled = p.page <= 1 ? 'disabled' : '';
+        html += `
+            <li class="page-item ${prevDisabled}">
+                <a class="page-link" href="javascript:void(0);" data-page="${p.page - 1}" aria-label="Previous">
+                    <span aria-hidden="true">&laquo;</span>
+                </a>
+            </li>
+        `;
+
+        // Page Numbers logic with smart truncation
+        const total = p.total_pages;
+        const current = p.page;
+        let pagesToShow = [];
+
+        if (total <= 7) {
+            for (let i = 1; i <= total; i++) pagesToShow.push(i);
+        } else {
+            pagesToShow.push(1);
+            if (current > 3) pagesToShow.push('...');
+            const start = Math.max(2, current - 1);
+            const end = Math.min(total - 1, current + 1);
+            for (let i = start; i <= end; i++) pagesToShow.push(i);
+            if (current < total - 2) pagesToShow.push('...');
+            pagesToShow.push(total);
+        }
+
+        pagesToShow.forEach(item => {
+            if (item === '...') {
+                html += `<li class="page-item disabled"><span class="page-link">...</span></li>`;
+            } else {
+                const active = item === current ? 'active' : '';
+                html += `
+                    <li class="page-item ${active}">
+                        <a class="page-link" href="javascript:void(0);" data-page="${item}">${item}</a>
+                    </li>
+                `;
+            }
+        });
+
+        // Next Button
+        const nextDisabled = p.page >= total ? 'disabled' : '';
+        html += `
+            <li class="page-item ${nextDisabled}">
+                <a class="page-link" href="javascript:void(0);" data-page="${p.page + 1}" aria-label="Next">
+                    <span aria-hidden="true">&raquo;</span>
+                </a>
+            </li>
+        `;
+
+        assetsPagination.innerHTML = html;
+
+        // Attach click listeners to page links
+        assetsPagination.querySelectorAll('.page-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetPage = parseInt(this.getAttribute('data-page'));
+                if (!isNaN(targetPage) && targetPage >= 1 && targetPage <= p.total_pages && targetPage !== currentPage) {
+                    currentPage = targetPage;
+                    loadAssets();
+                }
+            });
+        });
+    }
+
+    // Page Size Selector Listener
+    if (pageSizeSelect) {
+        pageSizeSelect.addEventListener('change', function() {
+            pageSize = parseInt(this.value) || 20;
+            currentPage = 1;
+            loadAssets();
+        });
     }
 
     // KPI Card Click Handler (Filter Table by Status on Click)
@@ -576,6 +745,8 @@ document.addEventListener('DOMContentLoaded', () => {
             } else {
                 currentStatusFilter = clickedStatus;
             }
+            if (assetStatusFilter) assetStatusFilter.value = currentStatusFilter;
+            currentPage = 1;
             loadAssets();
         });
     });
@@ -603,8 +774,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 statusBadge = '<span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-25 px-2 py-1"><i class="bi bi-person-check me-1"></i>In Use</span>';
             } else if (st === 'under repair') {
                 statusBadge = '<span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-25 px-2 py-1"><i class="bi bi-tools me-1"></i>Under Repair</span>';
-            } else if (st === 'damaged' || st === 'scrapped') {
-                statusBadge = `<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1"><i class="bi bi-exclamation-octagon me-1"></i>${escapeHtml(a.status)}</span>`;
+            } else if (st === 'scrapped') {
+                statusBadge = '<span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2 py-1"><i class="bi bi-slash-circle me-1"></i>Scrapped</span>';
+            } else {
+                statusBadge = `<span class="badge bg-secondary bg-opacity-10 text-secondary border border-secondary border-opacity-25 px-2 py-1">${escapeHtml(a.status)}</span>`;
             }
 
             html += `
@@ -780,12 +953,26 @@ document.addEventListener('DOMContentLoaded', () => {
         let debounceTimer;
         assetSearchInput.addEventListener('input', () => {
             clearTimeout(debounceTimer);
-            debounceTimer = setTimeout(loadAssets, 300);
+            debounceTimer = setTimeout(() => {
+                currentPage = 1;
+                loadAssets();
+            }, 300);
         });
     }
 
     if (assetCategoryFilter) {
-        assetCategoryFilter.addEventListener('change', loadAssets);
+        assetCategoryFilter.addEventListener('change', () => {
+            currentPage = 1;
+            loadAssets();
+        });
+    }
+
+    if (assetStatusFilter) {
+        assetStatusFilter.addEventListener('change', function() {
+            currentStatusFilter = this.value;
+            currentPage = 1;
+            loadAssets();
+        });
     }
 
     const btnResetAssetFilters = document.getElementById('btnResetAssetFilters');
@@ -793,7 +980,9 @@ document.addEventListener('DOMContentLoaded', () => {
         btnResetAssetFilters.addEventListener('click', () => {
             if (assetSearchInput) assetSearchInput.value = '';
             if (assetCategoryFilter) assetCategoryFilter.value = '';
+            if (assetStatusFilter) assetStatusFilter.value = '';
             currentStatusFilter = '';
+            currentPage = 1;
             loadAssets();
             showToast('Filters reset to show all assets.', 'success');
         });
@@ -896,7 +1085,62 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     // -------------------------------------------------------------
-    // 4. DRAWER CATEGORY HANDLERS
+    // 4. BULK IMPORT ASSETS HANDLER
+    // -------------------------------------------------------------
+    const formImportAsset = document.getElementById('formImportAsset');
+    const btnSubmitImportAsset = document.getElementById('btnSubmitImportAsset');
+    const importAssetSpinner = document.getElementById('importAssetSpinner');
+    const importAssetBtnText = document.getElementById('importAssetBtnText');
+
+    if (formImportAsset) {
+        formImportAsset.addEventListener('submit', async function(e) {
+            e.preventDefault();
+
+            const fileInput = document.getElementById('importAssetFileInput');
+            if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+                showToast('Please choose a valid .csv file to import.', 'error');
+                return;
+            }
+
+            btnSubmitImportAsset.disabled = true;
+            importAssetSpinner.classList.remove('d-none');
+            importAssetBtnText.textContent = 'Importing...';
+
+            const formData = new FormData(formImportAsset);
+
+            try {
+                const res = await fetch('<?= url('api/asset_action.php') ?>', {
+                    method: 'POST',
+                    body: formData
+                });
+                const resJson = await res.json();
+
+                if (resJson.success) {
+                    showToast(resJson.message, 'success');
+                    formImportAsset.reset();
+                    const modalEl = document.getElementById('modalImportAsset');
+                    const modal = bootstrap.Modal.getInstance(modalEl);
+                    if (modal) modal.hide();
+                    loadAssets();
+
+                    if (resJson.errors && resJson.errors.length > 0) {
+                        alert("Import Summary:\n" + resJson.message + "\n\nSkipped / Warnings:\n" + resJson.errors.slice(0, 10).join("\n") + (resJson.errors.length > 10 ? "\n...and more" : ""));
+                    }
+                } else {
+                    showToast(resJson.message || 'Failed to import assets.', 'error');
+                }
+            } catch (err) {
+                showToast('Server error occurred during bulk import.', 'error');
+            } finally {
+                btnSubmitImportAsset.disabled = false;
+                importAssetSpinner.classList.add('d-none');
+                importAssetBtnText.textContent = 'Upload & Import';
+            }
+        });
+    }
+
+    // -------------------------------------------------------------
+    // 5. DRAWER CATEGORY HANDLERS
     // -------------------------------------------------------------
     const formDrawer = document.getElementById('formDrawerCategory');
     const drawerCatId = document.getElementById('drawerCatId');
@@ -965,6 +1209,17 @@ document.addEventListener('DOMContentLoaded', () => {
     if (formDrawer) {
         formDrawer.addEventListener('submit', async (e) => {
             e.preventDefault();
+
+            // Client-side trim and clean trailing dots/spaces
+            if (drawerCatName) {
+                drawerCatName.value = drawerCatName.value.replace(/^[.\s\-_,;:/|\\]+|[.\s\-_,;:/|\\]+$/g, '').replace(/\s+/g, ' ');
+            }
+
+            if (!drawerCatName.value.trim()) {
+                showToast('Please enter a valid Category Name.', 'error');
+                return;
+            }
+
             btnSaveDrawer.disabled = true;
             drawerCatSpinner.classList.remove('d-none');
             drawerCatBtnText.textContent = 'Saving...';
